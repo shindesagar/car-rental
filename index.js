@@ -21,9 +21,13 @@ connectToDB();
 const UserRoute = require("./routes/user.route");
 const CarListRoute = require("./routes/carList.route");
 const bookCarRoute = require("./routes/bookCar.route");
+const FeedBackRoute = require("./routes/feedback.route");
+const TransactionRoute = require("./routes/transaction.route");
 app.use('/user-ms',UserRoute);
 app.use('/car',CarListRoute);
 app.use('/car',bookCarRoute);
+app.use('/comment-ms',FeedBackRoute);
+app.use('/payment-ms',TransactionRoute)
 app.use('*',(req,res,next)=>{
     const error = new Error('The route does not exit')
     next(error)

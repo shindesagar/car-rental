@@ -1,4 +1,9 @@
+//Model
 const bookCarModel = require("../models/bookCarSchema.model");
+//Constant
+const constants = require('../constants/constant.json');
+
+//This function is used for car booking
 const bookCar = async (req,res)=>{
     try {
         const {_id} = req.params;
@@ -12,14 +17,15 @@ const bookCar = async (req,res)=>{
             carType:carType,
             id:_id
         });
-        res.status(200).json({
+        res.status(constants.statusCode.SUCCESS).json({
             message: "Booked car successfully",
-            bookData
+            data:bookData
         })
         
     } catch (error) {
-        res.status(404).json({
-            message: error.message,
+        res.status(constants.statusCode.INTERNAL_SERVER_ERROR).json({
+            message:constants.statusMessage.INTERNAL_SERVER_ERROR,
+            data:{}
         })
     }
 }

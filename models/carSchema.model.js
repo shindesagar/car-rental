@@ -47,12 +47,13 @@ const CarListSchema = new Schema({
     serviceCity:{
         type:String
     },
-    ownerType:{
+    ownerId:{
         type: String,
-        enum : ['customer', 'owner', 'admin'],
-        default: 'customer',
         require:true,
     },
+    overAllRating:{
+        type:Number,
+    }
 },{
     timestamps:true,
     versionKey:false

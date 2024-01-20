@@ -36,9 +36,11 @@ const UserdetailSchema = new Schema({
         unique:true
     },
     role:{
-        type: String,
-        enum : ['customer', 'owner', 'admin'],
-        default: 'customer',
+        type: [{
+            type: String,
+            enum: ['customer', 'owner', 'admin'], // Specify the enum values
+            default: ['customer'],
+        }],
         require:true,
     },
     mobileNo:{

@@ -21,8 +21,12 @@ const bookCarSchema = new Schema({
         type: String,
         require: true
     },
-    id:{
+    carId:{
         type: String,
+        require: true
+    },
+    rentType:{
+        type: String, //Self driver / with driver Enum
         require: true
     }
 },{

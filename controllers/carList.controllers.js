@@ -1,7 +1,11 @@
+//Model
 const CarListModel = require('../models/carSchema.model');
-const constants = require('../constants/constant.json')
+
+//Constants
+const constants = require('../constants/constant.json');
+
+// This function is used to fetch all cars list
 const getCarList = async (req,res)=>{
-    
         let filter
         let {limit = 10,skip = 0} = req.query // Use for pagination
         if(limit > 100 || skip > 100){
@@ -28,35 +32,40 @@ const getCarList = async (req,res)=>{
         if (data.length >= 1) {
             return res.status(constants.statusCode.SUCCESS).json({ count: data.length, data });
         } else {
-            return res.json({
+            return res.status(constants.statusCode.NOT_FOUND).json({
                 message: 'No Data Found',
             });
         }
-   
 }
+
+
+// This function is used to add new cars to the carlist
 const addCarDetails = async (req,res) =>{
     try{
-        const {brand,name,fuleType,transmissionType,seatingCapacity,price,carImage,segment,carModelYear,isActive,fromDate,toDate,serviceCity,ownerType} = req.body;
+        const {brand,name,fuelType,transmissionType,seatingCapacity,price,carImage,segment,carModelYear,isActive,fromDate,toDate,serviceCity,ownerId,overAllRating} = req.body;
         const insertCarDetails = await CarListModel.create({
-            brand,name,fuleType,transmissionType,seatingCapacity,price,carImage,segment,carModelYear,isActive,fromDate,toDate,serviceCity,ownerType
+            brand,name,fuelType,transmissionType,seatingCapacity,price,carImage,segment,carModelYear,isActive,fromDate,toDate,serviceCity,ownerId,overAllRating
         })
-        res.json({
+        res.status(constants.statusCode.SUCCESS).json({
             message:"Car Added Successfully",
-            insertCarDetails
+            data:insertCarDetails
         })
     }catch(err){
-        res.json({
-            message: err.message
+        res.status(constants.statusCode.INTERNAL_SERVER_ERROR).json({
+            message: constants.statusMessage.INTERNAL_SERVER_ERROR,
+            data:{}
         })
     }
 }
+
+
+// This function is used to update the car details as requirement
 const carUpdateById = async (req,res) =>{
-    
-        const {id} = req.params;
+    const {id} = req.params;
         let receviedFields = Object.keys(req.body);
         const existingFields = ["brand","name","fuelType","transmissionType","seatingCapacity","price","carImage","segment","carModelYear","isActive","fromDate","toDate","serviceCity","ownerType"];
-        receviedFields = receviedFields.map( r => existingFields.includes(r));
-        let updateFields;
+        receviedFields = receviedFields.filter( r => existingFields.includes(r));
+        let updateFields = {};
         receviedFields = receviedFields.filter(r=> req.body[r] && req.body[r] !== "")
         if(receviedFields.length === 0){
             res.status(constants.statusCode.BAD_REQUEST).json({
@@ -67,35 +76,38 @@ const carUpdateById = async (req,res) =>{
             updateFields[val] = req.body[val]
         })
     try{
-        const updateCarDetails = await CarListModel.findByIdAndUpdate(id,{$set:receviedFields},{new:true})
-        
+        const updateCarDetails = await CarListModel.findByIdAndUpdate(id,{$set:updateFields},{new:true})
         return res.status(constants.statusCode.SUCCESS).json({
             message:"Car Updated successfully!",
-            updateCarDetails
+            data:updateCarDetails
         })
     }catch(err){
         return res.status(constants.statusCode.INTERNAL_SERVER_ERROR).json({
-            message:err.message
+            message: constants.statusMessage.INTERNAL_SERVER_ERROR,
+            data:{}
         })
     }
 }
 
+
+// This function is used to delete a car from the car list
 const deleteCarById = async (req,res) =>{
     try {
         const {id} = req.params;
         const deletedCar = await CarListModel.findOneAndDelete({_id:id});
         if (!deletedCar) {
-            return res.status(404).json({
+            return res.status(constants.statusCode.NOT_FOUND).json({
                 message: "Car not found"
             });
         }
-        res.status(201).json({
+        res.status(constants.statusCode.NO_CONTENT).json({
             message: "Car Deleted Successfully",
-            deletedCar
+            data:deletedCar
         });
     } catch (error) {
-        res.status(404).json({
-            message:error.message
+        res.status(constants.statusCode.INTERNAL_SERVER_ERROR).json({
+            message:constants.statusMessage.INTERNAL_SERVER_ERROR,
+            data:{}
         })
     }
 }
